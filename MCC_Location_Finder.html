@@ -110,6 +110,7 @@
       listEl.innerHTML = `<div class="card empty">No matches for “${escapeHtml(term)}”</div>`;
       return;
     }
+  const html = items.map(it=>{
     const badgeHtml = it.inverter 
   ? `<span class="badge inv">INVERTER</span>` 
   : "";
