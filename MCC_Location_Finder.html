@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MCC Location Finder</title>
+  <style>
+    :root {
+      --bg1:#eff6ff; --bg2:#eef2ff; --card:#ffffff; --text:#111827; --muted:#374151;
+      --border:#e5e7eb; --blue:#2563eb; --green:#16a34a; --amber:#f59e0b; --gray:#6b7280;
+    }
+    *{box-sizing:border-box}
+    body {
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+      padding:16px;
+    }
+    .wrap{max-width:820px;margin:0 auto}
+    .header{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:18px; box-shadow:0 10px 25px rgba(0,0,0,.06);}
+    h1{margin:0 0 6px 0; font-size:24px}
+    .sub{margin:0; color:var(--muted); font-size:14px}
+    .searchcard{margin-top:12px; background:var(--card); border:1px solid var(--border); border-radius:18px; padding:14px; box-shadow:0 10px 25px rgba(0,0,0,.06);}
+    .row{display:flex; gap:10px; align-items:center;}
+    input {
+      flex:1;
+      font-size:16px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:2px solid #d1d5db;
+      outline:none;
+    }
+    input:focus{border-color:var(--blue)}
+    button {
+      padding:11px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#f8fafc;
+      font-weight:700;
+      color:var(--text);
+    }
+    button.primary{background:var(--blue); color:white; border-color:var(--blue)}
+    .metaRow{display:flex; justify-content:space-between; gap:10px; margin-top:10px; color:var(--muted); font-size:13px}
+    .list{margin-top:12px; display:flex; flex-direction:column; gap:10px}
+    .card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:14px; box-shadow:0 10px 25px rgba(0,0,0,.06);}
+    .top{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+    .name{font-weight:800; font-size:16px; line-height:1.25; margin:0}
+    .badge{white-space:nowrap; font-size:11px; font-weight:900; padding:6px 10px; border-radius:999px; border:1px solid;}
+    .inv{background:#fffbeb; border-color:var(--amber); color:#92400e}
+    .dol{background:#f3f4f6; border-color:#9ca3af; color:#374151}
+    .line{margin-top:8px; color:var(--muted); font-size:14px}
+    .strong{font-weight:800; color:var(--text)}
+    .drive{font-weight:900; color:#1d4ed8}
+    .empty{text-align:center; color:var(--gray); padding:18px}
+    .hint{margin-top:14px; text-align:center; color:var(--gray); font-size:12px}
+    .pill{display:inline-block; padding:3px 8px; border-radius:999px; border:1px solid var(--border); background:#f8fafc; font-size:12px; color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <h1>MCC Location Finder</h1>
+      <p class="sub">Offline search page from “Sugar End Drive MCC Locations” (no installs, just open this file).</p>
+      <div class="hint" style="text-align:left;margin-top:10px">
+        <span class="pill">Search by equipment</span>
+        <span class="pill">drive (e.g. T02)</span>
+        <span class="pill">MCC</span>
+        <span class="pill">area</span>
+      </div>
+    </div>
+
+    <div class="searchcard">
+      <div class="row">
+        <input id="q" type="text" placeholder='Try: "Thick Juice Buffer Pump 1" or "T02"' autocomplete="off" />
+        <button id="clear" class="primary" type="button">Clear</button>
+      </div>
+      <div class="metaRow">
+        <div id="count">Type to search…</div>
+        <div>Matches capped at 200</div>
+      </div>
+    </div>
+
+    <div id="list" class="list"></div>
+    <div class="hint">Tip: save this file somewhere shared, or upload it to SharePoint and open it in your phone browser.</div>
+  </div>
+
+<script>
+  const DATA = [{"area": "Juice Preparation Area", "name": "Thick Juice Buffer Pump 1", "drive": "T02", "mcc": "Sugar End MCC", "inverter": true}, {"area": "Juice Preparation Area", "name": "Thick Juice Buffer Pump 2", "drive": "T03", "mcc": "Sugar End MCC", "inverter": true}, {"area": "Juice Preparation Area", "name": "Remelt Stirrer 1", "drive": "R04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Remelt Stirrer 2", "drive": "R05", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Remelt Pump 1", "drive": "K01", "mcc": "Sugar End MCC", "inverter": true}, {"area": "Juice Preparation Area", "name": "Remelt Pump 2", "drive": "K02", "mcc": "Sugar End MCC", "inverter": true}, {"area": "Juice Preparation Area", "name": "Remelt Extraction Fan", "drive": "I07", "mcc": "Sugar End MCC", "inverter": true}, {"area": "Juice Preparation Area", "name": "Granulator Overs Pump", "drive": "I09", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Unfiltered Pump 1", "drive": "N07", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Unfiltered Pump 2", "drive": "N08", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Precoat Tank Stirrer", "drive": "K8", "mcc": "Central MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Precoat Tank Pump 1", "drive": "U6", "mcc": "Central MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Precoat Tank Pump 2", "drive": "W1", "mcc": "Central MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "EDTA to Mixing Tank Pump", "drive": "17C", "mcc": "Old Power House", "inverter": false}, {"area": "Juice Preparation Area", "name": "EDTA Pump", "drive": "G5", "mcc": "Central MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Main Dissolver Stirrer 1", "drive": "R01", "mcc": "Sugar End MCC", "inverter": true}, {"area": "Juice Preparation Area", "name": "Main Dissolver Stirrer 2", "drive": "R02", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Main Dissolver Stirrer 3", "drive": "R03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Main Dissolver Pump 1", "drive": "T06", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Main Dissolver Pump 2", "drive": "T07", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Main Dissolver Extraction Fan", "drive": "G04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Main Dissolver Circ Pump 1", "drive": "P04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Main Dissolver Circ Pump 2", "drive": "P05", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Sugar End Sump Pump 1", "drive": "J04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Sugar End Sump Pump 2", "drive": "J05", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Sugar End Sump Pump 3", "drive": "J06", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Juice Preparation Area", "name": "Crystalliser Return Pump", "drive": "L01", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Pan Area", "name": "White Pan Stirrer 1", "drive": "L04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Pan Area", "name": "White Pan Stirrer 2", "drive": "M04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Pan Area", "name": "White Pan Stirrer 3", "drive": "L05", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Pan Area", "name": "White Pan Stirrer 4", "drive": "M05", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Pan Area", "name": "White Pan Stirrer 5", "drive": "L06", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Pan Area", "name": "White Pan Stirrer 6", "drive": "M06", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Pan Area", "name": "Reedham Strike Receiver", "drive": "M02", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Pan Area", "name": "Cantley Strike Receiver", "drive": "M01", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Pan Area", "name": "White Mixer", "drive": "M03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Pan Area", "name": "White Strike vapour Ex Fan", "drive": "I06", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "White Cent Motor 1", "drive": "B1", "mcc": "White Cent MCC", "inverter": true}, {"area": "White Cent Area", "name": "White Cent Motor 2", "drive": "C1", "mcc": "White Cent MCC", "inverter": true}, {"area": "White Cent Area", "name": "White Cent Motor 3", "drive": "D1", "mcc": "White Cent MCC", "inverter": true}, {"area": "White Cent Area", "name": "White Cent Motor 4", "drive": "E1", "mcc": "White Cent MCC", "inverter": true}, {"area": "White Cent Area", "name": "White Cent Fan Motor 1", "drive": "B1", "mcc": "White Cent MCC", "inverter": true}, {"area": "White Cent Area", "name": "White Cent Fan Motor 2", "drive": "C1", "mcc": "White Cent MCC", "inverter": true}, {"area": "White Cent Area", "name": "White Cent Fan Motor 3", "drive": "D1", "mcc": "White Cent MCC", "inverter": true}, {"area": "White Cent Area", "name": "White Cent Fan Motor 4", "drive": "E1", "mcc": "White Cent MCC", "inverter": true}, {"area": "White Cent Area", "name": "High Green Pump 1", "drive": "K07", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "High Green Pump 2", "drive": "K08", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Wash Syrup Pump 1", "drive": "H02", "mcc": "Sugar End MCC", "inverter": true}, {"area": "White Cent Area", "name": "Wash Syrup Pump 2", "drive": "H03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Cent Wash Water Pump 1", "drive": "N01", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Cent Wash Water Pump 1", "drive": "N02", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "High Pressure Wash Water Pump 1", "drive": "J01", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "High Pressure Wash Water Pump 2", "drive": "J02", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "White Cent Vapour Ex Fan", "drive": "K06", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Wet Sugar Scroll 1", "drive": "P02", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Wet Sugar Scroll 2", "drive": "P03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Remelt Dump Scroll", "drive": "P01", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Wet Sugar Elevator", "drive": "N06", "mcc": "Sugar End MCC", "inverter": true}, {"area": "White Cent Area", "name": "Granulator Overs Scroll", "drive": "P06", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Granny Feed Scroll 1", "drive": "P08", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Granulator 1", "drive": "P07", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Granulator Fan 1", "drive": "N04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Rotex Feed Scroll 1", "drive": "V01", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Rotex 1", "drive": "Q06", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Granny Feed Scroll 2", "drive": "Q08", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Granulator 2", "drive": "Q07", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Granulator Fan 2", "drive": "N05", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Rotex Feed Scroll 2", "drive": "V02", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Rotex 2", "drive": "S06", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Dry Sugar Scroll", "drive": "Q01", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Dry Sugar Elevator", "drive": "S04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "No1 Scroll to 250T Bin", "drive": "S05", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "No2 Scroll to 250T Bin", "drive": "Q02", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Deduster Fan 1", "drive": "Q03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Deduster Fan 2", "drive": "Q04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Deduster Fan 3", "drive": "I05", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Deduster Circ Pump", "drive": "V03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Wet Sugar Conv Vapour Ex Fan", "drive": "H3", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Rotex Room Vapour Ex Fan", "drive": "", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Wet Elevator Sump Pump", "drive": "L02", "mcc": "Sugar End MCC", "inverter": false}, {"area": "White Cent Area", "name": "Scroll Room Sump Pump", "drive": "K03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "SLE / Brunswick", "name": "SLE Conc Liquor Pump", "drive": "19B", "mcc": "Old Power House", "inverter": false}, {"area": "SLE / Brunswick", "name": "Cooling Crystalliser Stirrer", "drive": "17I", "mcc": "Old Power House", "inverter": false}, {"area": "SLE / Brunswick", "name": "Ditmar Head Tank Stirrer", "drive": "", "mcc": "Old Power House", "inverter": false}, {"area": "SLE / Brunswick", "name": "Seed Receiver Stirrer", "drive": "17E", "mcc": "Old Power House", "inverter": false}, {"area": "SLE / Brunswick", "name": "Seed Head Tank", "drive": "16G", "mcc": "Old Power House", "inverter": false}, {"area": "SLE / Brunswick", "name": "Seed Circ Pump", "drive": "15B", "mcc": "Old Power House", "inverter": false}, {"area": "SLE / Brunswick", "name": "Sec Cooling Water Pump", "drive": "16I", "mcc": "Old Power House", "inverter": false}, {"area": "SLE / Brunswick", "name": "Seed Liquor Trans Pump", "drive": "17K", "mcc": "Old Power House", "inverter": false}, {"area": "SLE / Brunswick", "name": "Cooling Cryst Gearbox Fan", "drive": "N03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Aero Belt", "drive": "E3", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Aero Belt Fan", "drive": "F3", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Aero Belt Cleaning Brush", "drive": "F2", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Scroll to Coolers", "drive": "F4", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Fluid Bed FD Fan", "drive": "G5", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Fluid Bed ID Fan", "drive": "H5", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Fluid Bed Deduster Circ Pump No 1", "drive": "H1", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Fluid Bed Deduster to Factory Pump No 2", "drive": "H2", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Rotary Cooler", "drive": "F7", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Rotary Cooler Deduster Fan", "drive": "I1", "mcc": "Wearhouse 4 MCC", "inverter": true}, {"area": "Dry Sugar Conveying", "name": "Rotary Cooler Deduster Circ Pump", "drive": "I5", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Rotary Cooler Deduster to Factory Pump", "drive": "I4", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Fluid Bed Outfall Scroll", "drive": "F5", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Rotary Cooler Ex Scroll", "drive": "F6", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Elevator from Coolers", "drive": "G1", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Choke Scroll to Belt 4", "drive": "F1", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Dry Sugar Belt 4", "drive": "G2", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Dry Sugar Belt 5", "drive": "G3", "mcc": "Wearhouse 4 MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Scroll to Lower Elevator", "drive": "E3", "mcc": "Silo MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Lower Silo Elevator", "drive": "E5", "mcc": "Silo MCC", "inverter": true}, {"area": "Dry Sugar Conveying", "name": "Upper Silo Elevator", "drive": "E6", "mcc": "Silo MCC", "inverter": true}, {"area": "Dry Sugar Conveying", "name": "Scroll to Silo 1", "drive": "D8", "mcc": "Silo MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Belt to Silo 1", "drive": "D7", "mcc": "Silo MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Scroll to Silo 2", "drive": "C6", "mcc": "Silo MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Belt to Silo 2", "drive": "D6", "mcc": "Silo MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Scroll to Silo 3", "drive": "C5", "mcc": "Silo MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Belt to Silo 3", "drive": "D5", "mcc": "Silo MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Scroll to Silo 4", "drive": "C4", "mcc": "Silo MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Belt to Silo 4", "drive": "D4", "mcc": "Silo MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Scroll to Silo 5", "drive": "C3", "mcc": "Silo MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Belt to Silo 5", "drive": "D3", "mcc": "Silo MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Scroll to Silo 6", "drive": "C2", "mcc": "Silo MCC", "inverter": false}, {"area": "Dry Sugar Conveying", "name": "Belt to Silo 6", "drive": "D2", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Main Air Fan 1", "drive": "H4", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Return Air Fan 1", "drive": "J4", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Cooling Water Pump 1", "drive": "J1", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Main Air Fan 2", "drive": "G7", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Return Air Fan 2", "drive": "G4", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Cooling Water Pump 2", "drive": "G1", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Main Air Fan 3", "drive": "F4", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Return Air Fan 3", "drive": "E4", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Cooling Water Pump 3", "drive": "E1", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Main Air Fan 4", "drive": "B4", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Return Air Fan 4", "drive": "C4", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Cooling Water Pump 4", "drive": "C1", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Filters Scroll 1-4", "drive": "B5", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Rotary Valve 1", "drive": "H3", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Rotary Valve 2", "drive": "G6", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Rotary Valve 3", "drive": "F3", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Rotary Valve 4", "drive": "B3", "mcc": "Silo MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Main Air Fan 5", "drive": "D1", "mcc": "Silo 5 & 6 MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Return Air Fan 5", "drive": "B3", "mcc": "Silo 5 & 6 MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Main Air Fan 6", "drive": "D3", "mcc": "Silo 5 & 6 MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Return Air Fan 6", "drive": "C3", "mcc": "Silo 5 & 6 MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Cooling Water Pump 5/6 No 1", "drive": "E4", "mcc": "Silo 5 & 6 MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Cooling Water Pump 5/6 No 2", "drive": "E5", "mcc": "Silo 5 & 6 MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Rotary Valve 5/6", "drive": "B2", "mcc": "Silo 5 & 6 MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Filters Scroll 5/6", "drive": "C2", "mcc": "Silo 5 & 6 MCC", "inverter": false}, {"area": "Silo Conditioning", "name": "Dust Collection Fan 5/6", "drive": "D5", "mcc": "Silo 5 & 6 MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "Raw Pan Stirrer 1", "drive": "U04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "Raw Pan Stirrer 2", "drive": "U05", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "Raw Pan Stirrer 3", "drive": "U06", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "AP Pan Stirrer 1", "drive": "A01", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "AP Pan Stirrer 2", "drive": "A02", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "AP Pan Stirrer 3", "drive": "B01", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "AP Pan Stirrer 4", "drive": "B02", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "Raw Strike Receiver Stirrer", "drive": "I08", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "AP Strike Receiver Stirrer", "drive": "H04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "Raw Mass Pump 1", "drive": "H07", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "Raw Mass Pump 2", "drive": "H08", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "AP Mass Pump 1", "drive": "I04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "AP Mass Pump 2", "drive": "G01", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "AP Pan 4 Thickening Pump", "drive": "", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Pan Area", "name": "AP Pan 3 Export Pump", "drive": "", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Cents Area", "name": "Raw Cent 1", "drive": "E07", "mcc": "Raw Cent MCC", "inverter": false}, {"area": "Raw Cents Area", "name": "Raw Cent 2", "drive": "F07", "mcc": "Raw Cent MCC", "inverter": false}, {"area": "Raw Cents Area", "name": "Raw Cent 3", "drive": "G05", "mcc": "Raw Cent MCC", "inverter": false}, {"area": "Raw Cents Area", "name": "Aff Cent 1", "drive": "A03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Cents Area", "name": "Aff Cent 2", "drive": "B03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Cents Area", "name": "AP Cent 1", "drive": "C03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Cents Area", "name": "AP Cent 2", "drive": "D03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Raw Cents Area", "name": "Raw Cent Oil Mist Seperator", "drive": "K04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Low Green Export", "name": "Pump to Buffer Tank 1", "drive": "N5", "mcc": "Sugar End MCC", "inverter": true}, {"area": "Low Green Export", "name": "Pump to Buffer Tank 2", "drive": "N6", "mcc": "Sugar End MCC", "inverter": true}, {"area": "Low Green Export", "name": "Flash Evap Circ Pump", "drive": "U03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Low Green Export", "name": "Low Green Export Pump 1", "drive": "U01", "mcc": "Sugar End MCC", "inverter": true}, {"area": "Low Green Export", "name": "Low Green Export Pump 2", "drive": "U02", "mcc": "Sugar End MCC", "inverter": true}, {"area": "Low Green Export", "name": "Low Green Export Pump 3", "drive": "T01", "mcc": "Sugar End MCC", "inverter": true}, {"area": "Low Green Export", "name": "AP Low Green Pump No 1", "drive": "I02", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Low Green Export", "name": "AP Low Green Pump No 2", "drive": "I03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Thick Juice Import/Export", "name": "Thick Juice Storage Pump 1", "drive": "", "mcc": "Juice Tank MCC", "inverter": true}, {"area": "Thick Juice Import/Export", "name": "Thick Juice Storage Pump 2", "drive": "", "mcc": "Juice Tank MCC", "inverter": true}, {"area": "Thick Juice Import/Export", "name": "Dregs Pump", "drive": "", "mcc": "Juice Tank MCC", "inverter": false}, {"area": "Thick Juice Import/Export", "name": "Condensate Feed Pump", "drive": "T1", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Thick Juice Import/Export", "name": "Flash Evap Circ Pump", "drive": "W8", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Thick Juice Import/Export", "name": "Import to Buffer Tank Pump", "drive": "F04", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Thick Juice Import/Export", "name": "Buffer Tank Export Pump", "drive": "V4", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Thick Juice Import/Export", "name": "Thick Juice to Store Pump", "drive": "J07", "mcc": "Sugar End MCC", "inverter": true}, {"area": "Thick Juice Import/Export", "name": "Export Condensate Pump", "drive": "L03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Thick Juice Import/Export", "name": "CIP Pump", "drive": "F06", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Thick Juice Import/Export", "name": "Export Sump Pump", "drive": "F03", "mcc": "Sugar End MCC", "inverter": false}, {"area": "Sugar End Services", "name": "55 System Pump", "drive": "18B", "mcc": "Old Power House", "inverter": false}, {"area": "Sugar End Services", "name": "Seal Water Cooling Pump", "drive": "P3", "mcc": "Effluent MCC", "inverter": false}, {"area": "Sugar End Services", "name": "Seal Water Return Pump", "drive": "G6", "mcc": "Central MCC", "inverter": false}, {"area": "Sugar End Services", "name": "Low Side Vacuum Pump", "drive": "S1", "mcc": "Effluent MCC", "inverter": false}, {"area": "Sugar End Services", "name": "Swing Vacuum Pump", "drive": "R1", "mcc": "Effluent MCC", "inverter": false}, {"area": "Sugar End Services", "name": "White Vacuum Pump", "drive": "T1", "mcc": "Effluent MCC", "inverter": false}, {"area": "Sugar End Services", "name": "Primary Cooling Water Pump 1", "drive": "16K", "mcc": "Old Power House", "inverter": false}, {"area": "Sugar End Services", "name": "Primary Cooling Water Pump 2", "drive": "10G", "mcc": "Old Power House", "inverter": false}, {"area": "Sugar End Services", "name": "Condensate to Cooling Tower Pump 1", "drive": "D1", "mcc": "Effluent MCC", "inverter": false}, {"area": "Sugar End Services", "name": "Condensate to Cooling Tower Pump 2", "drive": "E1", "mcc": "Effluent MCC", "inverter": false}, {"area": "Sugar End Services", "name": "Water to Condensers Pump 1", "drive": "3.3kV Room", "mcc": "Effluent MCC", "inverter": false}, {"area": "Sugar End Services", "name": "Water to Condensers Pump 2", "drive": "3.3kV Room", "mcc": "Effluent MCC", "inverter": false}, {"area": "Sugar End Services", "name": "Cooling Tower Fan 1", "drive": "N/A", "mcc": "Effluent MCC", "inverter": true}, {"area": "Sugar End Services", "name": "Cooling Tower Fan 2", "drive": "N/A", "mcc": "Effluent MCC", "inverter": true}, {"area": "Sugar End Services", "name": "Cooling Tower Fan 3", "drive": "N/A", "mcc": "Effluent MCC", "inverter": true}];
+  const qEl = document.getElementById("q");
+  const listEl = document.getElementById("list");
+  const countEl = document.getElementById("count");
+  const clearEl = document.getElementById("clear");
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (c)=>({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function render(items, term){
+    listEl.innerHTML = "";
+    if(!term){
+      countEl.textContent = "Type to search…";
+      return;
+    }
+    countEl.innerHTML = `Showing <strong>${items.length}</strong> result${items.length===1?'':'s'} for “${escapeHtml(term)}”`;
+    if(items.length===0){
+      listEl.innerHTML = `<div class="card empty">No matches for “${escapeHtml(term)}”</div>`;
+      return;
+    }
+    const html = items.map(it=>{
+      const badgeClass = it.inverter ? "badge inv" : "badge dol";
+      const badgeText = it.inverter ? "INVERTER" : "DOL";
+      return `
+        <div class="card">
+          <div class="top">
+            <p class="name">${escapeHtml(it.name)}</p>
+            <span class="${badgeClass}">${badgeText}</span>
+          </div>
+          <div class="line">Area: <span class="strong">${escapeHtml(it.area || "—")}</span></div>
+          <div class="line">Drive: <span class="drive">${escapeHtml(it.drive || "—")}</span></div>
+          <div class="line">MCC: <span class="strong">${escapeHtml(it.mcc || "—")}</span></div>
+        </div>`;
+    }).join("");
+    listEl.innerHTML = html;
+  }
+
+  function search(term){
+    const t = term.trim().toLowerCase();
+    if(!t) return [];
+    const out = [];
+    for(const it of DATA){
+      const name = (it.name||"").toLowerCase();
+      const drive = String(it.drive||"").toLowerCase();
+      const mcc = (it.mcc||"").toLowerCase();
+      const area = (it.area||"").toLowerCase();
+      if(name.includes(t) || drive.includes(t) || mcc.includes(t) || area.includes(t)) {
+        out.push(it);
+        if(out.length>=200) break;
+      }
+    }
+    return out;
+  }
+
+  qEl.addEventListener("input", (e)=> {
+    const term = e.target.value;
+    render(search(term), term.trim());
+  });
+
+  clearEl.addEventListener("click", ()=> {
+    qEl.value = "";
+    qEl.focus();
+    render([], "");
+  });
+
+  // focus on load (nice on mobile too)
+  setTimeout(()=>qEl.focus(), 50);
+</script>
+</body>
+</html>
