@@ -110,15 +110,15 @@
       listEl.innerHTML = `<div class="card empty">No matches for “${escapeHtml(term)}”</div>`;
       return;
     }
-    const html = items.map(it=>{
-      const badgeClass = it.inverter ? "badge inv" : "badge dol";
-            const badgeText = it.inverter ? "INVERTER" : "DOL";
+    const badgeHtml = it.inverter 
+  ? `<span class="badge inv">INVERTER</span>` 
+  : "";
 
       return `
         <div class="card">
           <div class="top">
             <p class="name">${escapeHtml(it.name)}</p>
-            <span class="${badgeClass}">${badgeText}</span>
+            ${badgeHtml}
           </div>
           <div class="line">Area: <span class="strong">${escapeHtml(it.area || "—")}</span></div>
           <div class="line">Drive: <span class="drive">${escapeHtml(it.drive || "—")}</span></div>
