@@ -112,6 +112,7 @@
     }
     const html = items.map(it=>{
       const badgeClass = it.inverter ? "badge inv" : "badge dol";
+            const badgeText = it.inverter ? "INVERTER" : "DOL";
 
       return `
         <div class="card">
