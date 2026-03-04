@@ -3,87 +3,176 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MCC Location Finder</title>
+  <title>MCC Location Finder - British Sugar</title>
+  <meta name="theme-color" content="#8BC53F">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://raw.githubusercontent.com/sw33tsugar/App_hub/main/icons/home.png">
   <style>
-    :root {
-      --bg1:#eff6ff; --bg2:#eef2ff; --card:#ffffff; --text:#111827; --muted:#374151;
-      --border:#e5e7eb; --blue:#2563eb; --green:#16a34a; --amber:#f59e0b; --gray:#6b7280;
-    }
-    *{box-sizing:border-box}
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
     body {
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color:var(--text);
-      background: linear-gradient(135deg, var(--bg1), var(--bg2));
-      min-height:100vh;
-      padding:16px;
+      min-height: 100vh;
+      /* subtle gradient background matching App Hub colours */
+      background: linear-gradient(135deg,
+                                  rgba(139,197,63,0.08) 0%,
+                                  rgba(74,135,17,0.08) 100%),
+                  #f8f9fa;
+      color: #2d3748;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      padding: 0;
     }
+
+    /* Header bar */
+    .top-bar {
+      background: white;
+      border-bottom: 3px solid #8BC53F;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8BC53F 0%, #7AB82E 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 24px;
+      color: white;
+      box-shadow: 0 4px 12px rgba(139, 197, 63, 0.3);
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-text .main {
+      font-size: 22px;
+      font-weight: 700;
+      color: #2d3748;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text .sub {
+      font-size: 12px;
+      color: #718096;
+      margin-top: -2px;
+    }
+
+    /* Main container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 32px;
+    }
+
+    /* Content wrapper */
     .wrap{max-width:820px;margin:0 auto}
-    .header{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:18px; box-shadow:0 10px 25px rgba(0,0,0,.06);}
-    h1{margin:0 0 6px 0; font-size:24px}
-    .sub{margin:0; color:var(--muted); font-size:14px}
-    .searchcard{margin-top:12px; background:var(--card); border:1px solid var(--border); border-radius:18px; padding:14px; box-shadow:0 10px 25px rgba(0,0,0,.06);}
+    .header{background:white; border:1px solid #e5e7eb; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+    h1{margin:0 0 6px 0; font-size:28px; color:#2d3748}
+    .sub{margin:0; color:#718096; font-size:14px}
+    .searchcard{margin-top:16px; background:white; border:1px solid #e5e7eb; border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,0.05);}
     .row{display:flex; gap:10px; align-items:center;}
     input {
       flex:1;
       font-size:16px;
       padding:12px 14px;
-      border-radius:14px;
+      border-radius:8px;
       border:2px solid #d1d5db;
       outline:none;
     }
-    input:focus{border-color:var(--blue)}
+    input:focus{border-color:#8BC53F}
     button {
       padding:11px 12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background:#f8fafc;
+      border-radius:8px;
+      border:1px solid #e5e7eb;
+      background:#f8f9fa;
       font-weight:700;
-      color:var(--text);
+      color:#2d3748;
     }
-    button.primary{background:var(--blue); color:white; border-color:var(--blue)}
-    .metaRow{display:flex; justify-content:space-between; gap:10px; margin-top:10px; color:var(--muted); font-size:13px}
-    .list{margin-top:12px; display:flex; flex-direction:column; gap:10px}
-    .card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:14px; box-shadow:0 10px 25px rgba(0,0,0,.06);}
+    button.primary{background:#8BC53F; color:white; border-color:#8BC53F}
+    button.primary:hover{background:#7AB82E; border-color:#7AB82E}
+    .metaRow{display:flex; justify-content:space-between; gap:10px; margin-top:10px; color:#718096; font-size:13px}
+    .list{margin-top:16px; display:flex; flex-direction:column; gap:10px}
+    .card{background:white; border:1px solid #e5e7eb; border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,0.05);}
     .top{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
     .name{font-weight:800; font-size:16px; line-height:1.25; margin:0}
     .badge{white-space:nowrap; font-size:11px; font-weight:900; padding:6px 10px; border-radius:999px; border:1px solid;}
-    .inv{background:#fffbeb; border-color:var(--amber); color:#92400e}
+    .inv{background:#fef3c7; border-color:#fcd34d; color:#92400e}
 
-    .line{margin-top:8px; color:var(--muted); font-size:14px}
-    .strong{font-weight:800; color:var(--text)}
-    .drive{font-weight:900; color:#1d4ed8}
-    .empty{text-align:center; color:var(--gray); padding:18px}
-    .hint{margin-top:14px; text-align:center; color:var(--gray); font-size:12px}
-    .pill{display:inline-block; padding:3px 8px; border-radius:999px; border:1px solid var(--border); background:#f8fafc; font-size:12px; color:var(--muted)}
+    .line{margin-top:8px; color:#718096; font-size:14px}
+    .strong{font-weight:800; color:#2d3748}
+    .drive{font-weight:900; color:#8BC53F}
+    .empty{text-align:center; color:#6b7280; padding:18px}
+    .hint{margin-top:14px; text-align:center; color:#6b7280; font-size:12px}
+    .pill{display:inline-block; padding:3px 8px; border-radius:999px; border:1px solid #e5e7eb; background:#f8f9fa; font-size:12px; color:#718096}
+    /* search input should match the pills' background, text in dark for contrast */
+    .searchcard .row input {
+      background: #f8f9fa;
+      color: #2d3748;
+      border: 1px solid #8BC53F;
+    }
+
+    .logo-image {
+      /* keep the logo from blowing up or being distorted, but allow it to
+         scale naturally. `max-` rules avoid cropping if the asset is larger
+         than 48px, and `object-fit` keeps the aspect ratio intact. */
+      max-width: 48px;
+      max-height: 48px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="header">
-      <h1>MCC Location Finder</h1>
-      <p class="sub">Search page for Sugar End Drive locations.</p>
-      <div class="hint" style="text-align:left;margin-top:10px">
-        <span class="pill">Search by equipment</span>
-        <span class="pill">drive (e.g. T02)</span>
-        <span class="pill">MCC</span>
-        <span class="pill">area</span>
+  <div class="top-bar">
+    <div class="logo-area">
+      <img src="https://raw.githubusercontent.com/sw33tsugar/MCC_location_finder/main/bs.png" alt="British Sugar Logo" class="logo-image">
+      <div class="logo-text">
+        <div class="main">Refinery Drive Locations</div>
+        <div class="sub">British Sugar</div>
       </div>
     </div>
+  </div>
 
-    <div class="searchcard">
-      <div class="row">
-        <input id="q" type="text" placeholder='Try: "Thick Juice Buffer Pump 1" or "T02"' autocomplete="off" />
-        <button id="clear" class="primary" type="button">Clear</button>
+  <div class="container">
+    <div class="wrap">
+      <div class="header">
+        <h1>Drive Location Finder</h1>
+        <p class="sub">Search page for Sugar End Drive locations.</p>
+        <div class="hint" style="text-align:left;margin-top:10px">
+          <span class="pill">Search by equipment</span>
+          <span class="pill">drive (e.g. T02)</span>
+          <span class="pill">MCC</span>
+          <span class="pill">area</span>
+        </div>
       </div>
-      <div class="metaRow">
-        <div id="count">Type to search…</div>
-        <div>Matches capped at 200</div>
+
+      <div class="searchcard">
+        <div class="row">
+          <input id="q" type="text" placeholder='Try: "Thick Juice Buffer Pump 1" or "T02"' autocomplete="off" />
+          <button id="clear" class="primary" type="button">Clear</button>
+        </div>
+        <div class="metaRow">
+          <div id="count">Type to search…</div>
+          <div>Matches capped at 200</div>
+        </div>
       </div>
+
+      <div id="list" class="list"></div>
     </div>
-
-    <div id="list" class="list"></div>
-
   </div>
 
 <script>
